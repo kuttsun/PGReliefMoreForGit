@@ -1,0 +1,67 @@
+﻿<Controls:MetroWindow x:Class="PGReliefMoreForGit.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PGReliefMoreForGit"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+		BorderBrush="{DynamicResource AccentColorBrush}"
+		TitleCaps="False"
+        mc:Ignorable="d"
+        Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="350" Width="525">
+	<Grid>
+		<Grid.Resources>
+			<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+				<Setter Property="Margin" Value="5" />
+			</Style>
+			<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+				<Setter Property="Margin" Value="5" />
+			</Style>
+			<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+				<Setter Property="Margin" Value="5" />
+			</Style>
+			<Style TargetType="GroupBox" BasedOn="{StaticResource MetroGroupBox}">
+				<Setter Property="Margin" Value="5" />
+				<Setter Property="Controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+			</Style>
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<GroupBox Grid.Row="0" Grid.Column="0" Header="Git" HorizontalAlignment="Stretch" BorderThickness="0">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock  Grid.Row="0" Grid.Column="0" Text="Repository" VerticalAlignment="Center" />
+				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Repository, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True"/>
+				<TextBlock  Grid.Row="1" Grid.Column="0" Text="SHA Hash" VerticalAlignment="Center" />
+				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ShaHash, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True"/>
+			</Grid>
+		</GroupBox>
+		<GroupBox Grid.Row="1" Grid.Column="0" Header="PGRelief" HorizontalAlignment="Stretch" BorderThickness="0">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock  Grid.Row="0" Grid.Column="0" Text="Input File" VerticalAlignment="Center" />
+				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
+				<TextBlock  Grid.Row="1" Grid.Column="0" Text="Output File" VerticalAlignment="Center" />
+				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
+			</Grid>
+		</GroupBox>
+		<Button Grid.Row="2" Grid.Column="0"  Content="Run" Command="{Binding Button_Run}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+	</Grid>
+</Controls:MetroWindow>
