@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
+using System.Diagnostics;
+
 using NLog;
 
 namespace PGReliefMoreForGit
@@ -21,9 +23,10 @@ namespace PGReliefMoreForGit
 		public static void Main()
 		{
 			// タイトルを設定
+			var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			var assm = Assembly.GetExecutingAssembly();
 			var name = assm.GetName();
-			logger.Info($"----- Start Application ----- {name.Name} {name.Version} -----");
+			logger.Info($"----- Start Application ----- {name.Name} [{fvi.ProductVersion} ({name.Version})] -----");
 
 			App app = new App();
 			app.InitializeComponent();

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Diagnostics;
 
 using PGReliefMoreForGit.Models;
 using PGReliefMoreForGit.Models.Setting;
@@ -57,9 +58,10 @@ namespace PGReliefMoreForGit.ViewModels
 		public MainWindowsVM()
 		{
 			// タイトルを設定
+			var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			var assm = Assembly.GetExecutingAssembly();
 			var name = assm.GetName();
-			Title = $"{name.Name} {name.Version}";
+			Title = $"{name.Name}   {fvi.ProductVersion}";
 
 			// 設定の読み込み
 			Repository = FileSetting.Instance.Repository;
