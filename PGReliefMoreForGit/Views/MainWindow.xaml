@@ -8,29 +8,27 @@
 		BorderBrush="{DynamicResource AccentColorBrush}"
 		TitleCaps="False"
         mc:Ignorable="d"
-        Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="350" Width="525">
-	<Grid>
-		<Grid.Resources>
-			<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-				<Setter Property="Margin" Value="5" />
-			</Style>
-			<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-				<Setter Property="Margin" Value="5" />
-			</Style>
-			<Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
-				<Setter Property="Margin" Value="5" />
-			</Style>
-			<Style TargetType="GroupBox" BasedOn="{StaticResource MetroGroupBox}">
-				<Setter Property="Margin" Value="5" />
-				<Setter Property="Controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
-			</Style>
-		</Grid.Resources>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-		<GroupBox Grid.Row="0" Grid.Column="0" Header="Git" HorizontalAlignment="Stretch" BorderThickness="0">
+        Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="600" Width="600">
+	<Controls:MetroWindow.Resources>
+		<Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MetroTextBlock}">
+			<Setter Property="Margin" Value="5" />
+		</Style>
+		<Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MetroTextBox}">
+			<Setter Property="Margin" Value="5" />
+		</Style>
+		<Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
+			<Setter Property="Margin" Value="5" />
+		</Style>
+		<Style TargetType="GroupBox" BasedOn="{StaticResource MetroGroupBox}">
+			<Setter Property="Margin" Value="5" />
+			<Setter Property="Controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+		</Style>
+		<Style TargetType="{x:Type RichTextBox}" BasedOn="{StaticResource MetroRichTextBox}">
+			<Setter Property="Margin" Value="5" />
+		</Style>
+	</Controls:MetroWindow.Resources>
+	<DockPanel>
+		<GroupBox DockPanel.Dock="Top" Header="Git" HorizontalAlignment="Stretch" BorderThickness="0">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
@@ -46,7 +44,7 @@
 				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ShaHash, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True"/>
 			</Grid>
 		</GroupBox>
-		<GroupBox Grid.Row="1" Grid.Column="0" Header="PGRelief" HorizontalAlignment="Stretch" BorderThickness="0">
+		<GroupBox DockPanel.Dock="Top" Header="PGRelief" HorizontalAlignment="Stretch" BorderThickness="0">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
@@ -54,14 +52,23 @@
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="49*"/>
+					<ColumnDefinition Width="384*"/>
 				</Grid.ColumnDefinitions>
-				<TextBlock  Grid.Row="0" Grid.Column="0" Text="Input File" VerticalAlignment="Center" />
-				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
-				<TextBlock  Grid.Row="1" Grid.Column="0" Text="Output File" VerticalAlignment="Center" />
-				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
+				<TextBlock  Grid.Row="0" Grid.Column="0" Text="Input File" VerticalAlignment="Center" Margin="0,4" />
+				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
+				<TextBlock  Grid.Row="1" Grid.Column="0" Text="Output File" VerticalAlignment="Center" Margin="0,4" />
+				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
 			</Grid>
 		</GroupBox>
-		<Button Grid.Row="2" Grid.Column="0"  Content="Run" Command="{Binding Button_Run}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
-	</Grid>
+		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding Button_Run}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+		<RichTextBox DockPanel.Dock="Top" x:Name="richTextBox" >
+			<FlowDocument>
+				<Paragraph>
+					<Run Text="RichTextBox"/>
+				</Paragraph>
+			</FlowDocument>
+		</RichTextBox>
+	</DockPanel>
+	
 </Controls:MetroWindow>
