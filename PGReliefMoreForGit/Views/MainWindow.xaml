@@ -23,7 +23,7 @@
 			<Setter Property="Margin" Value="5" />
 			<Setter Property="Controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
 		</Style>
-		<Style TargetType="{x:Type RichTextBox}" BasedOn="{StaticResource MetroRichTextBox}">
+		<Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MetroListBox}">
 			<Setter Property="Margin" Value="5" />
 		</Style>
 	</Controls:MetroWindow.Resources>
@@ -62,13 +62,7 @@
 			</Grid>
 		</GroupBox>
 		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding Button_Run}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
-		<RichTextBox DockPanel.Dock="Top" x:Name="richTextBox" >
-			<FlowDocument>
-				<Paragraph>
-					<Run Text="RichTextBox"/>
-				</Paragraph>
-			</FlowDocument>
-		</RichTextBox>
+		<ListBox DockPanel.Dock="Top" x:Name="listBox" BorderThickness="1" />
 	</DockPanel>
 	
 </Controls:MetroWindow>
