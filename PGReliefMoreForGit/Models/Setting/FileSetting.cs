@@ -15,11 +15,11 @@ namespace PGReliefMoreForGit.Models.Setting
 	public sealed class FileSetting
 	{
 		/// <summary>
-		/// 名前
+		/// Git リポジトリへのパス
 		/// </summary>
 		public string Repository { get; set; } = string.Empty;
 		/// <summary>
-		/// 苗字
+		/// 比較対象のコミットの SHA ハッシュ値
 		/// </summary>
 		public string ShaHash { get; set; } = string.Empty;
 		/// <summary>
