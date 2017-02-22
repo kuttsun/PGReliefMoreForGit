@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace PGReliefMoreForGit.Views
 {
@@ -32,6 +33,14 @@ namespace PGReliefMoreForGit.Views
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+		private async void ButtonMahappsDialog_Click(object sender, RoutedEventArgs e)
+		{
+			//await this.ShowMessageAsync("Done", "完了しました");
+			var controller = await this.ShowProgressAsync("Please wait...", "Progress message");
+
+
 		}
 	}
 }
