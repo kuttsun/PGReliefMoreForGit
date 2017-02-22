@@ -11,9 +11,9 @@
 		TitleCaps="False"
         Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="600" Width="600">
 
-	<Window.DataContext>
+	<Controls:MetroWindow.DataContext>
 		<vm:MainWindowViewModel/>
-	</Window.DataContext>
+	</Controls:MetroWindow.DataContext>
 
 	<i:Interaction.Triggers>
 
@@ -90,6 +90,7 @@
 			</Grid>
 		</GroupBox>
 		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding RunCommand}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+		<Button DockPanel.Dock="Top" Content="MahApps Dialog from Code Behind" Click="ButtonMahappsDialog_Click" Width="100" HorizontalAlignment="Right"/>
 		<ListBox DockPanel.Dock="Top" x:Name="listBox" BorderThickness="1" />
 	</DockPanel>
 </Controls:MetroWindow>

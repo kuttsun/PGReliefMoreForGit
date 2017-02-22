@@ -119,9 +119,9 @@ namespace PGReliefMoreForGit.ViewModels
 			try
 			{
 				Analysis.Run(Repository, ShaHash, InputFile, OutputFile);
-				Messenger.RaiseAsync(new InformationMessage("抽出が完了しました","Done", MessageBoxImage.Information, "RunResult"));
+				Messenger.RaiseAsync(new InformationMessage("抽出が完了しました", "Done", MessageBoxImage.Information, "RunResult"));
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Messenger.RaiseAsync(new InformationMessage($"失敗しました\n----------\n{e.Message}", "Error", MessageBoxImage.Error, "RunResult"));
 			}
