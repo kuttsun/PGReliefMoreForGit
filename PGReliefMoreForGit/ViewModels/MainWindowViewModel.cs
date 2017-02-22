@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Reflection;
 using System.Diagnostics;
+using System.Windows;
 
 using Livet;
 using Livet.Commands;
@@ -66,8 +67,72 @@ namespace PGReliefMoreForGit.ViewModels
 		{
 		}
 
+		/// <summary>
+		/// コンストラクタ
+		/// </summary>
+		public MainWindowViewModel()
+		{
+			// タイトルを設定
+			var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+			var assm = Assembly.GetExecutingAssembly();
+			var name = assm.GetName();
+			Title = $"{name.Name}   {fvi.ProductVersion}";
+
+			// 設定の読み込み
+			Repository = FileSetting.Instance.Repository;
+			ShaHash = FileSetting.Instance.ShaHash;
+			InputFile = FileSetting.Instance.InputFile;
+			OutputFile = FileSetting.Instance.OutputFile;
+		}
+
+		Analysis Analysis { get; set; } = new Analysis();
+
 		public string Title { get; set; } = string.Empty;
 
+		#region Runボタンの処理
+		private ViewModelCommand _RunCommand;
+		bool _CanRun = true;
+
+		public ViewModelCommand RunCommand
+		{
+			get
+			{
+				if (_RunCommand == null)
+				{
+					_RunCommand = new ViewModelCommand(Run, CanRun);
+				}
+				return _RunCommand;
+			}
+		}
+
+		public bool CanRun()
+		{
+			return _CanRun;
+		}
+
+		public void Run()
+		{
+			// ボタンの実行可否が変化したことを通知
+			_CanRun = false;
+			RunCommand.RaiseCanExecuteChanged();
+
+			try
+			{
+				Analysis.Run(Repository, ShaHash, InputFile, OutputFile);
+				Messenger.RaiseAsync(new InformationMessage("抽出が完了しました","Done", MessageBoxImage.Information, "RunResult"));
+			}
+			catch(Exception e)
+			{
+				Messenger.RaiseAsync(new InformationMessage($"失敗しました\n----------\n{e.Message}", "Error", MessageBoxImage.Error, "RunResult"));
+			}
+
+			// ボタンの実行可否が変化したことを通知
+			_CanRun = true;
+			RunCommand.RaiseCanExecuteChanged();
+		}
+		#endregion
+
+		#region エディットボックスの値
 		/// <summary>
 		/// Git のローカルリポジトリへのパス
 		/// </summary>
@@ -97,38 +162,6 @@ namespace PGReliefMoreForGit.ViewModels
 		/// 出力ファイル（html ファイル）
 		/// </summary>
 		public string OutputFile { get; set; } = string.Empty;
-
-		/// <summary>
-		/// 実行ボタン
-		/// </summary>
-		//public DelegateCommand Button_Run { get; set; }
-
-		Analysis Analysis { get; set; } = new Analysis();
-
-		/// <summary>
-		/// コンストラクタ
-		/// </summary>
-		public MainWindowViewModel()
-		{
-			// タイトルを設定
-			var fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-			var assm = Assembly.GetExecutingAssembly();
-			var name = assm.GetName();
-			Title = $"{name.Name}   {fvi.ProductVersion}";
-
-			// 設定の読み込み
-			Repository = FileSetting.Instance.Repository;
-			ShaHash = FileSetting.Instance.ShaHash;
-			InputFile = FileSetting.Instance.InputFile;
-			OutputFile = FileSetting.Instance.OutputFile;
-
-			// 実行ボタン
-			/*
-			Button_Run = new DelegateCommand(
-						x => Analysis.Run(Repository, ShaHash, InputFile, OutputFile),
-						x => true
-			);
-			*/
-		}
+		#endregion
 	}
 }
