@@ -9,7 +9,7 @@
 		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 		BorderBrush="{DynamicResource AccentColorBrush}"
 		TitleCaps="False"
-        Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="600" Width="600">
+        Title="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Height="310" Width="600">
 
 	<Controls:MetroWindow.DataContext>
 		<vm:MainWindowViewModel/>
@@ -89,8 +89,12 @@
 				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
 			</Grid>
 		</GroupBox>
+		<!--
 		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding RunCommand}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
-		<Button DockPanel.Dock="Top" Content="MahApps Dialog from Code Behind" Click="ButtonMahappsDialog_Click" Width="100" HorizontalAlignment="Right"/>
+		-->
+		<Button DockPanel.Dock="Top" Content="Run" Click="ButtonRun_Click" Width="100" Height="20" HorizontalAlignment="Right"/>
+		<!--
 		<ListBox DockPanel.Dock="Top" x:Name="listBox" BorderThickness="1" />
+		-->
 	</DockPanel>
 </Controls:MetroWindow>

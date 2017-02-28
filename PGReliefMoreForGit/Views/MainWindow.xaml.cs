@@ -11,9 +11,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+
+using PGReliefMoreForGit.ViewModels;
 
 namespace PGReliefMoreForGit.Views
 {
@@ -35,12 +39,18 @@ namespace PGReliefMoreForGit.Views
 			InitializeComponent();
 		}
 
-		private async void ButtonMahappsDialog_Click(object sender, RoutedEventArgs e)
+		// とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
+		private async void ButtonRun_Click(object sender, RoutedEventArgs e)
 		{
-			//await this.ShowMessageAsync("Done", "完了しました");
-			var controller = await this.ShowProgressAsync("Please wait...", "Progress message");
+			var controller = await this.ShowProgressAsync("Processing", "Please wait...");
 
+			controller.SetIndeterminate();
 
+			var vm = DataContext as MainWindowViewModel;
+
+			await Task.Run(() => vm.Run());
+
+			await controller.CloseAsync();
 		}
 	}
 }
