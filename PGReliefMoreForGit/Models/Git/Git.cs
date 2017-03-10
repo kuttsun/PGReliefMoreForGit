@@ -92,32 +92,61 @@ namespace PGReliefMoreForGit.Models.Git
 							logger.Trace($"<UnifiedText>ファイル名:{diff.Path} 開始行:{startLine} 行数:{numberOfLines}");
 						}
 					}
-
-					// 先頭が スペース で始まっている場合は変更なしの内容
-					if ((strline.StartsWith(" ") == true) && (startLine > 0))
+					else
 					{
-						lineCount++;
-
-						// 行のカウントと差分情報に記載されていた変更行数が一致したら解析完了とみなす
-						if (lineCount >= numberOfLines)
+						// 差分情報を取得できている場合にのみ処理
+						if (startLine > 0)
 						{
-							logger.Trace($"<抽出結果>ファイル名:{diff.Path} 開始行:{startDifferentLine} 行数:{differentLineCount}");
-							changedLine.Add(new ChangedLine(diff.Path, startDifferentLine, differentLineCount));
-						}
-					}
+							// 先頭が スペース で始まっている場合は変更なしの内容
+							// 先頭が + で始まっている場合は変更後のファイルの内容
+							// この２つが変更後のファイルに含まれる行なので、この２つだけを行数としてカウントする
+							if (strline.StartsWith(" ") == true)
+							{
+								lineCount++;
+							}
 
-					// 先頭が + で始まっている場合は変更後のファイルの内容
-					if ((strline.StartsWith("+") == true) && (startLine > 0))
-					{
-						if (startDifferentLine == 0)
-						{
-							startDifferentLine = startLine + lineCount;
+							if (strline.StartsWith("+") == true)
+							{
+								if (startDifferentLine == 0)
+								{
+									startDifferentLine = startLine + lineCount;
+								}
+								lineCount++;
+								differentLineCount++;
+							}
+							else
+							{
+								// 先頭が + でない場合は差分情報を登録する
+								if (startDifferentLine > 0)
+								{
+									AddChangeLine(changedLine, diff.Path, startDifferentLine, differentLineCount);
+									startDifferentLine = 0;
+									differentLineCount = 0;
+								}
+							}
 						}
-						lineCount++;
-						differentLineCount++;
 					}
 				}
+
+				// 未登録の差分情報があるかもしれないので、ここで再度登録
+				if (startDifferentLine > 0)
+				{
+					AddChangeLine(changedLine, diff.Path, startDifferentLine, differentLineCount);
+				}
 			}
+		}
+
+		/// <summary>
+		/// 差分情報を登録する
+		/// </summary>
+		/// <param name="changedLine"></param>
+		/// <param name="path"></param>
+		/// <param name="startDifferentLine"></param>
+		/// <param name="differentLineCount"></param>
+		void AddChangeLine(List<ChangedLine> changedLine, string path, int startDifferentLine, int differentLineCount)
+		{
+			logger.Trace($"<抽出結果>ファイル名:{path} 開始行:{startDifferentLine} 行数:{differentLineCount}");
+			changedLine.Add(new ChangedLine(path, startDifferentLine, differentLineCount));
 		}
 	}
 }
