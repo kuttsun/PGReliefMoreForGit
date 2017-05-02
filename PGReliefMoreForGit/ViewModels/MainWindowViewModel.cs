@@ -16,6 +16,7 @@ using Livet.Messaging.Windows;
 
 using PGReliefMoreForGit.Models;
 using PGReliefMoreForGit.Models.Setting;
+using PGReliefMoreForGit.Models.Update;
 
 namespace PGReliefMoreForGit.ViewModels
 {
@@ -129,6 +130,67 @@ namespace PGReliefMoreForGit.ViewModels
 			// ボタンの実行可否が変化したことを通知
 			_CanRun = true;
 			RunCommand.RaiseCanExecuteChanged();
+		}
+		#endregion
+
+		#region 更新をチェックする
+		/*
+		private ViewModelCommand _CheckUpdateCommand;
+		bool _CanCheckUpdate = true;
+
+		public ViewModelCommand CheckUpdateCommand
+		{
+			get
+			{
+				if (_CheckUpdateCommand == null)
+				{
+					_CheckUpdateCommand = new ViewModelCommand(CheckUpdate, CanCheckUpdate);
+				}
+				return _CheckUpdateCommand;
+			}
+		}
+
+		public bool CanCheckUpdate()
+		{
+			return _CanCheckUpdate;
+		}
+		*/
+
+		Update update = new Update("https://github.com/kuttsun/PGReliefMoreForGit/releases");
+		/// <summary>
+		/// アップデートが存在するかどうかチェックする
+		/// </summary>
+		/// <returns></returns>
+		public bool CheckUpdate()
+		{
+			bool ret = false;
+			//_CanCheckUpdate = false;
+
+			// 最新のアップデートがあるかどうかチェックする
+
+			// 自分自身のバージョン情報を取得する
+			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+			// 結果を表示
+			Console.WriteLine("製品バージョン {0}", fvi.ProductVersion);// AssemblyVersion
+			Console.WriteLine("ファイルバージョン {0}", fvi.FileVersion);// AssemblyFileVersion
+
+			string latestVersion;
+			if (update.ExistsUpdate(fvi.ProductVersion, out latestVersion) == true)
+			{
+				ret = true;
+			}
+
+			//_CanCheckUpdate = true;
+			return ret;
+		}
+
+		/// <summary>
+		/// アップデートを実行する
+		/// </summary>
+		/// <returns></returns>
+		public bool RunUpdate()
+		{
+			return update.RunUpdate();
 		}
 		#endregion
 
