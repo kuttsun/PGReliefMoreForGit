@@ -11,10 +11,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using HtmlAgilityPack;
+using NLog;
 
 namespace PGReliefMoreForGit.Models.Update
 {
-	public class Update : NotificationObject
+	/// <summary>
+	/// アプリケーションの自動アップデート機能を提供するクラス（Singleton）
+	/// </summary>
+	public sealed class Update : NotificationObject
 	{
 		/*
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
@@ -35,12 +39,30 @@ namespace PGReliefMoreForGit.Models.Update
 		// 最新のバージョン
 		string latestVersion = string.Empty;
 
+		Logger logger = LogManager.GetCurrentClassLogger();
+
+		/// <summary>
+		/// 自分のインスタンス
+		/// </summary>
+		public static Update Instance
+		{
+			get
+			{
+				if (instance == null)
+				{
+					instance = new Update();
+				}
+				return instance;
+			}
+		}
+		static Update instance = null;
+
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
-		public Update(string githubReleaseURL)
+		private Update()
 		{
-			gitHubReleaseURL = githubReleaseURL;
+			gitHubReleaseURL = "https://github.com/kuttsun/PGReliefMoreForGit/releases";
 			exeFullName = Assembly.GetExecutingAssembly().Location;
 			exeFileName = Path.GetFileName(exeFullName);
 			oldExeFileName = Path.GetFileName(exeFullName) + ".old";
@@ -109,7 +131,8 @@ namespace PGReliefMoreForGit.Models.Update
 			{
 				using (WebClient webClient = new WebClient())
 				{
-					webClient.DownloadFile($"{gitHubReleaseURL}download/{latestVersion}/{fileName}", fileName);
+					var downloadFileName = $"{gitHubReleaseURL}/download/{latestVersion}/{fileName}";
+					webClient.DownloadFile(downloadFileName, fileName);
 					return true;
 				}
 			}
@@ -181,7 +204,6 @@ namespace PGReliefMoreForGit.Models.Update
 						if (entry.FullName == exeFileName)
 						{
 							// exeファイルは直接上書きできないので、リネームして展開し、再起動後に古いファイルを削除する
-							Console.WriteLine("リネームして展開: " + entry.FullName);
 							File.Delete(oldExeFileName);
 							File.Move(exeFileName, oldExeFileName);
 						}
@@ -192,11 +214,11 @@ namespace PGReliefMoreForGit.Models.Update
 						}
 						// ZipArchiveEntryオブジェクトのExtractToFileメソッドにフルパスを渡す
 						entry.ExtractToFile(entry.FullName);
-						Console.WriteLine("展開成功: " + entry.FullName);
+						logger.Info("展開成功: " + entry.FullName);
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine("展開失敗: " + e.Message);
+						logger.Error("展開失敗: " + e.Message);
 					}
 				}
 			}
@@ -210,18 +232,31 @@ namespace PGReliefMoreForGit.Models.Update
 		/// <returns></returns>
 		public bool RunUpdate()
 		{
-			// 最新バージョンの zip ファイルをダウンロードする（ダウンロード前に今ある zip ファイルは削除しておく）
-			File.Delete(archiveFileName);
-			DownloadLatestVersion(archiveFileName);
+			logger.Info("アップデート開始");
 
 			// 現在のファイル一式をアーカイブして取っておく
 			ArchiveDir(Directory.GetCurrentDirectory(), backupFileName);
 
+			logger.Info("バックアップ完了");
+
+			// 最新バージョンの zip ファイルをダウンロードする（ダウンロード前に今ある zip ファイルは削除しておく）
+			File.Delete(archiveFileName);
+			DownloadLatestVersion(archiveFileName);
+
+			logger.Info("最新バージョンのダウンロード完了");
+
 			// ダウンロードした zip ファイルを展開し、１ファイルずつ上書きしていく
 			ExtractEntries(archiveFileName);
 
+			// ダウンロードした zip ファイルを削除
+			File.Delete(archiveFileName);
+
+			logger.Info("ダウンロードファイルの削除完了");
+
 			// アプリケーションの再起動
-			Process.Start(exeFullName, "/up " + Process.GetCurrentProcess().Id);
+			string arguments = "/up " + Process.GetCurrentProcess().Id;
+			logger.Info($"アプリケーション再起動({arguments})");
+			Process.Start(exeFullName, arguments);
 
 			return true;
 		}
@@ -232,28 +267,40 @@ namespace PGReliefMoreForGit.Models.Update
 		/// <returns></returns>
 		public bool CleanUp()
 		{
+			// プログラム引数を取得
+			string[] args = Environment.GetCommandLineArgs();
+
 			// プログラム引数 /up が指定されているインデックスを取得
-			int index = Environment.CommandLine.IndexOf("/up");
+			int index = Array.IndexOf(args, "/up");
 			if (index != -1)
 			{
+				logger.Info("アップデート後のクリーンアップ開始");
+
 				try
 				{
-					// プログラム引数を取得
-					string[] args = Environment.GetCommandLineArgs();
+					logger.Debug($"index={index}");
+
+					foreach (var arg in args)
+					{
+						logger.Debug($"arg={arg}");
+					}
+
 					// プログラム引数 /up の次がプロセスID
 					int pid = Convert.ToInt32(args[index + 1]);
-					Console.WriteLine("id=" + pid);
+					logger.Info("id=" + pid);
+
 					// 終了待ち
 					Process.GetProcessById(pid).WaitForExit();
-				}
-				catch (Exception)
-				{
-				}
 
-				// プログラムが終了したので古いファイルを削除
-				File.Delete(oldExeFileName);
-				Console.WriteLine("Update Completed");
-				return true;
+					// プログラムが終了したので古いファイルを削除
+					File.Delete(oldExeFileName);
+					logger.Info("Update Completed");
+					return true;
+				}
+				catch (Exception e)
+				{
+					logger.Fatal(e.Message);
+				}
 			}
 
 			return false;

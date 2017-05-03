@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
 
+using NLog;
+
 using Livet;
 using Livet.Commands;
 using Livet.Messaging;
@@ -63,6 +65,8 @@ namespace PGReliefMoreForGit.ViewModels
          * LivetのViewModelではプロパティ変更通知(RaisePropertyChanged)やDispatcherCollectionを使ったコレクション変更通知は
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
+
+		Logger logger = LogManager.GetCurrentClassLogger();
 
 		public void Initialize()
 		{
@@ -156,31 +160,32 @@ namespace PGReliefMoreForGit.ViewModels
 		}
 		*/
 
-		Update update = new Update("https://github.com/kuttsun/PGReliefMoreForGit/releases");
+		Update update = Update.Instance;
 		/// <summary>
 		/// アップデートが存在するかどうかチェックする
 		/// </summary>
 		/// <returns></returns>
-		public bool CheckUpdate()
+		public bool CheckUpdate(out string latestVersion)
 		{
-			bool ret = false;
-			//_CanCheckUpdate = false;
-
 			// 最新のアップデートがあるかどうかチェックする
+			logger.Info("アップデートのチェック開始");
 
 			// 自分自身のバージョン情報を取得する
 			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			// 結果を表示
-			Console.WriteLine("製品バージョン {0}", fvi.ProductVersion);// AssemblyVersion
-			Console.WriteLine("ファイルバージョン {0}", fvi.FileVersion);// AssemblyFileVersion
+			logger.Info($"現在の製品バージョン(AssemblyVersion) {fvi.ProductVersion}");
+			logger.Info($"現在のファイルバージョン(AssemblyFileVersion) {fvi.FileVersion}");
 
-			string latestVersion;
-			if (update.ExistsUpdate(fvi.ProductVersion, out latestVersion) == true)
+			bool ret = update.ExistsUpdate(fvi.ProductVersion, out latestVersion);
+			if (ret == true)
 			{
-				ret = true;
+				logger.Info($"アップデートあり {latestVersion}");
+			}
+			else
+			{
+				logger.Info("アップデートなし");
 			}
 
-			//_CanCheckUpdate = true;
 			return ret;
 		}
 

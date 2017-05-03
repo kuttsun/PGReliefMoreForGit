@@ -73,7 +73,8 @@ namespace PGReliefMoreForGit.Views
 
 			var vm = DataContext as MainWindowViewModel;
 
-			bool checkResult = await Task.Run(() => vm.CheckUpdate());
+			string latestVersion = string.Empty;
+			bool checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
 
 			// プログレスダイアログを閉じる
 			await controller1.CloseAsync();
@@ -86,7 +87,7 @@ namespace PGReliefMoreForGit.Views
 					AffirmativeButtonText = "Yes",
 					NegativeButtonText = "No",
 				};
-				var select = await this.ShowMessageAsync("Update Available", "A new version is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+				var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
 				if (select == MessageDialogResult.Affirmative)
 				{
 					// プログレスダイアログを表示

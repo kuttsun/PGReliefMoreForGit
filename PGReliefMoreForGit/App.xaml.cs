@@ -10,6 +10,8 @@ using System.Diagnostics;
 using NLog;
 using Livet;
 
+using PGReliefMoreForGit.Models.Update;
+
 namespace PGReliefMoreForGit
 {
 	/// <summary>
@@ -27,6 +29,9 @@ namespace PGReliefMoreForGit
 			var assm = Assembly.GetExecutingAssembly();
 			var name = assm.GetName();
 			logger.Info($"----- Start Application ----- {name.Name} [{fvi.ProductVersion} ({name.Version})] -----");
+
+			// アップデート後の起動の場合は後始末を行う
+			Update.Instance.CleanUp();
 
 			App app = new App();
 			app.InitializeComponent();
