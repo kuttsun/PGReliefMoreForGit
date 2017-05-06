@@ -74,43 +74,47 @@ namespace PGReliefMoreForGit.Views
 			var vm = DataContext as MainWindowViewModel;
 
 			string latestVersion = string.Empty;
-			bool checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
+			bool? checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
 
 			// プログレスダイアログを閉じる
 			await controller1.CloseAsync();
 
 			// 結果に応じてダイアログを表示
-			if (checkResult == true)
+			switch (checkResult)
 			{
-				var metroDialogSettings = new MetroDialogSettings()
-				{
-					AffirmativeButtonText = "Yes",
-					NegativeButtonText = "No",
-				};
-				var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
-				if (select == MessageDialogResult.Affirmative)
-				{
-					// プログレスダイアログを表示
-					var controller2 = await this.ShowProgressAsync("Run Update", "Please wait...");
-
-					// プログレスバー不確定モードにする
-					controller2.SetIndeterminate();
-
-					bool updateResult = await Task.Run(() => vm.RunUpdate());
-
-					// プログレスダイアログを閉じる
-					await controller2.CloseAsync();
-
-					if(updateResult == true)
+				case true:
+					var metroDialogSettings = new MetroDialogSettings()
 					{
-						// 成功したら再起動するため、アプリケーションを終了する
-						Close();
+						AffirmativeButtonText = "Yes",
+						NegativeButtonText = "No",
+					};
+					var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+					if (select == MessageDialogResult.Affirmative)
+					{
+						// プログレスダイアログを表示
+						var controller2 = await this.ShowProgressAsync("Run Update", "Please wait...");
+
+						// プログレスバー不確定モードにする
+						controller2.SetIndeterminate();
+
+						bool updateResult = await Task.Run(() => vm.RunUpdate());
+
+						// プログレスダイアログを閉じる
+						await controller2.CloseAsync();
+
+						if (updateResult == true)
+						{
+							// 成功したら再起動するため、アプリケーションを終了する
+							Close();
+						}
 					}
-				}
-			}
-			else
-			{
-				await this.ShowMessageAsync("No Updates", "You already have the latest version.");
+					break;
+				case false:
+					await this.ShowMessageAsync("No Updates", "You already have the latest version.");
+					break;
+				default:
+					await this.ShowMessageAsync("Network Error", "Check your network connection and try again.");
+					break;
 			}
 		}
 

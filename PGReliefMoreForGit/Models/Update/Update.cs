@@ -15,6 +15,7 @@ using NLog;
 
 namespace PGReliefMoreForGit.Models.Update
 {
+
 	/// <summary>
 	/// アプリケーションの自動アップデート機能を提供するクラス（Singleton）
 	/// </summary>
@@ -67,49 +68,82 @@ namespace PGReliefMoreForGit.Models.Update
 		}
 
 		/// <summary>
+		/// アップデートが存在するかどうかチェックする
+		/// </summary>
+		/// <returns></returns>
+		public bool? CheckUpdate(out string latestVersion)
+		{
+			// 最新のアップデートがあるかどうかチェックする
+			logger.Info("アップデートのチェック開始");
+
+			// 自分自身のバージョン情報を取得する
+			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+			// 結果を表示
+			logger.Info($"現在の製品バージョン(AssemblyVersion) {fvi.ProductVersion}");
+			logger.Info($"現在のファイルバージョン(AssemblyFileVersion) {fvi.FileVersion}");
+
+			bool ret = GetLatestVersion(out latestVersion);
+			if (ret == true)
+			{
+				var version1 = new Version(fvi.FileVersion);
+				var version2 = new Version(latestVersion);
+				if (version1 < version2)
+				{
+					this.latestVersion = latestVersion;
+					logger.Info($"アップデートあり {latestVersion}");
+					return true;
+				}
+				logger.Info($"アップデートなし {latestVersion}");
+				return false;
+			}
+			logger.Error("ネットワークエラー");
+			return null;
+		}
+
+		/// <summary>
 		/// 最新のアップデートがあるかどうかチェックする
 		/// </summary>
 		/// <param name="currentVersion"></param>
 		/// <returns></returns>
-		public bool ExistsUpdate(string currentVersion, out string latestVersion)
+		public bool GetLatestVersion(out string latestVersion)
 		{
-			// HtmlAgilityPack では直接URLのデータを取得できないようなので、
-			// WebClient を使用して取得する
-			using (WebClient webClient = new WebClient())
-			using (Stream stream = webClient.OpenRead(gitHubReleaseURL))
+			try
 			{
-				var html = new HtmlDocument();
-
-				// ページを取得
-				html.Load(stream);
-
-				// spanタグのやつの中で
-				var nodes = html.DocumentNode.Descendants("span")
-					// class が css-truncate-target のやつを取得し
-					.Where(node => node.GetAttributeValue("class", string.Empty).Contains("css-truncate-target"))
-					// タグの中身を取得
-					.Select(node => node.InnerHtml);
-
-				// 取得したタグの中身（バージョンのリスト）を順に表示
-				foreach (var version in nodes)
+				// HtmlAgilityPack では直接URLのデータを取得できないようなので、
+				// WebClient を使用して取得する
+				using (WebClient webClient = new WebClient())
+				using (Stream stream = webClient.OpenRead(gitHubReleaseURL))
 				{
-					Console.WriteLine(version);
-				}
+					var html = new HtmlDocument();
 
-				// バージョンを取得できた
-				if (nodes.Count() > 0)
-				{
-					// 一番最初が最も新しいバージョン
-					latestVersion = nodes.First().ToString();
+					// ページを取得
+					html.Load(stream);
 
-					var version1 = new Version(currentVersion);
-					var version2 = new Version(latestVersion);
-					if (version1 < version2)
+					// spanタグのやつの中で
+					var nodes = html.DocumentNode.Descendants("span")
+						// class が css-truncate-target のやつを取得し
+						.Where(node => node.GetAttributeValue("class", string.Empty).Contains("css-truncate-target"))
+						// タグの中身を取得
+						.Select(node => node.InnerHtml);
+
+					// 取得したタグの中身（バージョンのリスト）を順に表示
+					foreach (var version in nodes)
 					{
-						this.latestVersion = latestVersion;
+						Console.WriteLine(version);
+					}
+
+					// バージョンを取得できた
+					if (nodes.Count() > 0)
+					{
+						// 一番最初が最も新しいバージョン
+						latestVersion = nodes.First().ToString();
 						return true;
 					}
 				}
+			}
+			catch (Exception e)
+			{
+				logger.Error(e.Message);
 			}
 
 			latestVersion = string.Empty;

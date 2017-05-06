@@ -165,28 +165,9 @@ namespace PGReliefMoreForGit.ViewModels
 		/// アップデートが存在するかどうかチェックする
 		/// </summary>
 		/// <returns></returns>
-		public bool CheckUpdate(out string latestVersion)
+		public bool? CheckUpdate(out string latestVersion)
 		{
-			// 最新のアップデートがあるかどうかチェックする
-			logger.Info("アップデートのチェック開始");
-
-			// 自分自身のバージョン情報を取得する
-			FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-			// 結果を表示
-			logger.Info($"現在の製品バージョン(AssemblyVersion) {fvi.ProductVersion}");
-			logger.Info($"現在のファイルバージョン(AssemblyFileVersion) {fvi.FileVersion}");
-
-			bool ret = update.ExistsUpdate(fvi.ProductVersion, out latestVersion);
-			if (ret == true)
-			{
-				logger.Info($"アップデートあり {latestVersion}");
-			}
-			else
-			{
-				logger.Info("アップデートなし");
-			}
-
-			return ret;
+			return update.CheckUpdate(out latestVersion);
 		}
 
 		/// <summary>
