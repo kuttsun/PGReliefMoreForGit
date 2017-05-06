@@ -28,16 +28,14 @@ namespace PGReliefMoreForGit.Models.Update
 		readonly string gitHubReleaseURL = string.Empty;
 		// exe ファイルの絶対パス（正確にはアセンブリ名）
 		readonly string exeFullName = string.Empty;
-		// exe ファイル名
-		readonly string exeFileName = string.Empty;
-		// リネーム後の古い exe ファイル名
-		readonly string oldExeFileName = string.Empty;
 		// ダウンロードしてくる zip ファイル名
 		readonly string archiveFileName = string.Empty;
 		// バックアップした後の zip ファイル名
 		readonly string backupFileName = string.Empty;
 		// 最新のバージョン
 		string latestVersion = string.Empty;
+		// アップデート後のクリーンアップ時に削除するファイル
+		string deleteFiles = string.Empty;
 
 		Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -64,8 +62,6 @@ namespace PGReliefMoreForGit.Models.Update
 		{
 			gitHubReleaseURL = "https://github.com/kuttsun/PGReliefMoreForGit/releases";
 			exeFullName = Assembly.GetExecutingAssembly().Location;
-			exeFileName = Path.GetFileName(exeFullName);
-			oldExeFileName = Path.GetFileName(exeFullName) + ".old";
 			archiveFileName = Path.GetFileNameWithoutExtension(exeFullName) + ".zip";
 			backupFileName = "Backup.zip";
 		}
@@ -193,6 +189,8 @@ namespace PGReliefMoreForGit.Models.Update
 		/// <param name="archiveFileName"></param>
 		bool ExtractEntries(string archiveFileName)
 		{
+			deleteFiles = "/deleteFiles";
+
 			// ZIPファイルを開いてZipArchiveオブジェクトを作る
 			using (ZipArchive archive = ZipFile.OpenRead(archiveFileName))
 			{
@@ -201,24 +199,20 @@ namespace PGReliefMoreForGit.Models.Update
 				{
 					try
 					{
-						if (entry.FullName == exeFileName)
-						{
-							// exeファイルは直接上書きできないので、リネームして展開し、再起動後に古いファイルを削除する
-							File.Delete(oldExeFileName);
-							File.Move(exeFileName, oldExeFileName);
-						}
-						else
-						{
-							// 展開前に現在のファイルを削除
-							File.Delete(entry.FullName);
-						}
+						// 使用中のファイルは直接上書きできないので、リネームして展開し、再起動後に古いファイルを削除する
+						// (使用中でないファイルは上書きできるが、処理を共通化するため全てリネームして展開する)
+						string oldFullName = entry.FullName + ".old";
+						File.Delete(oldFullName);
+						File.Move(entry.FullName, oldFullName);
+
 						// ZipArchiveEntryオブジェクトのExtractToFileメソッドにフルパスを渡す
 						entry.ExtractToFile(entry.FullName);
-						logger.Info("展開成功: " + entry.FullName);
+						logger.Info($"展開成功: {entry.FullName}");
+						deleteFiles += $" {oldFullName}";
 					}
 					catch (Exception e)
 					{
-						logger.Error("展開失敗: " + e.Message);
+						logger.Fatal($"展開失敗: {entry.FullName}({e.Message})");
 					}
 				}
 			}
@@ -254,7 +248,7 @@ namespace PGReliefMoreForGit.Models.Update
 			logger.Info("ダウンロードファイルの削除完了");
 
 			// アプリケーションの再起動
-			string arguments = "/up " + Process.GetCurrentProcess().Id;
+			string arguments = $"/up {Process.GetCurrentProcess().Id} {deleteFiles}";
 			logger.Info($"アプリケーション再起動({arguments})");
 			Process.Start(exeFullName, arguments);
 
@@ -271,14 +265,14 @@ namespace PGReliefMoreForGit.Models.Update
 			string[] args = Environment.GetCommandLineArgs();
 
 			// プログラム引数 /up が指定されているインデックスを取得
-			int index = Array.IndexOf(args, "/up");
-			if (index != -1)
+			int indexOfUp = Array.IndexOf(args, "/up");
+			if (indexOfUp != -1)
 			{
 				logger.Info("アップデート後のクリーンアップ開始");
 
 				try
 				{
-					logger.Debug($"index={index}");
+					logger.Debug($"indexOfUp={indexOfUp}");
 
 					foreach (var arg in args)
 					{
@@ -286,14 +280,23 @@ namespace PGReliefMoreForGit.Models.Update
 					}
 
 					// プログラム引数 /up の次がプロセスID
-					int pid = Convert.ToInt32(args[index + 1]);
+					int pid = Convert.ToInt32(args[indexOfUp + 1]);
 					logger.Info("id=" + pid);
 
 					// 終了待ち
 					Process.GetProcessById(pid).WaitForExit();
 
 					// プログラムが終了したので古いファイルを削除
-					File.Delete(oldExeFileName);
+					int indexOfDeleteFiles = Array.IndexOf(args, "/deleteFiles");
+					logger.Debug($"indexOfDeleteFiles={indexOfDeleteFiles}");
+					if (indexOfDeleteFiles != -1)
+					{
+						for (int i = indexOfDeleteFiles + 1; i < args.Length; i++)
+						{
+							File.Delete(args[i]);
+							logger.Info($"ファイル削除:{args[i]}");
+						}
+					}
 					logger.Info("Update Completed");
 					return true;
 				}
