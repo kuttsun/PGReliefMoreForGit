@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -40,17 +41,100 @@ namespace PGReliefMoreForGit.Views
 		}
 
 		// とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
+
+		// 実行
 		private async void ButtonRun_Click(object sender, RoutedEventArgs e)
 		{
+			// プログレスダイアログを表示
 			var controller = await this.ShowProgressAsync("Processing", "Please wait...");
 
+			// プログレスバーを不確定モードにする
 			controller.SetIndeterminate();
 
 			var vm = DataContext as MainWindowViewModel;
 
-			await Task.Run(() => vm.Run());
+			string reason = string.Empty;
+			bool result = await Task.Run(() => vm.Run(out reason));
 
+			// プログレスダイアログを閉じる
 			await controller.CloseAsync();
+
+			if (result == true)
+			{
+				await this.ShowMessageAsync("Success", "Filtering completed.");
+			}
+			else
+			{
+				await this.ShowMessageAsync("Failure", reason);
+			}
+		}
+
+		// GitHub のページへアクセス
+		private void MenuGitHubPage_Click(object sender, RoutedEventArgs e)
+		{
+			Process.Start("https://github.com/kuttsun/PGReliefMoreForGit");
+		}
+
+		// 更新のチェック
+		private async void MenuCheckUpdate_Click(object sender, RoutedEventArgs e)
+		{
+			// プログレスダイアログを表示
+			var controller1 = await this.ShowProgressAsync("Checking Update", "Please wait...");
+
+			// プログレスバーを不確定モードにする
+			controller1.SetIndeterminate();
+
+			var vm = DataContext as MainWindowViewModel;
+
+			string latestVersion = string.Empty;
+			bool? checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
+
+			// プログレスダイアログを閉じる
+			await controller1.CloseAsync();
+
+			// 結果に応じてダイアログを表示
+			switch (checkResult)
+			{
+				case true:
+					var metroDialogSettings = new MetroDialogSettings()
+					{
+						AffirmativeButtonText = "Yes",
+						NegativeButtonText = "No",
+					};
+					var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+					if (select == MessageDialogResult.Affirmative)
+					{
+						// プログレスダイアログを表示
+						var controller2 = await this.ShowProgressAsync("Run Update", "Please wait...");
+
+						// プログレスバー不確定モードにする
+						controller2.SetIndeterminate();
+
+						bool updateResult = await Task.Run(() => vm.RunUpdate());
+
+						// プログレスダイアログを閉じる
+						await controller2.CloseAsync();
+
+						if (updateResult == true)
+						{
+							// 成功したら再起動するため、アプリケーションを終了する
+							Close();
+						}
+					}
+					break;
+				case false:
+					await this.ShowMessageAsync("No Updates", "You already have the latest version.");
+					break;
+				default:
+					await this.ShowMessageAsync("Network Error", "Check your network connection and try again.");
+					break;
+			}
+		}
+
+		// アプリ終了
+		private void MenuExit_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
 		}
 	}
 }

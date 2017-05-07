@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
 
+using NLog;
+
 using Livet;
 using Livet.Commands;
 using Livet.Messaging;
@@ -16,6 +18,7 @@ using Livet.Messaging.Windows;
 
 using PGReliefMoreForGit.Models;
 using PGReliefMoreForGit.Models.Setting;
+using PGReliefMoreForGit.Models.Update;
 
 namespace PGReliefMoreForGit.ViewModels
 {
@@ -63,6 +66,8 @@ namespace PGReliefMoreForGit.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
+		Logger logger = LogManager.GetCurrentClassLogger();
+
 		public void Initialize()
 		{
 		}
@@ -90,45 +95,70 @@ namespace PGReliefMoreForGit.ViewModels
 		public string Title { get; set; } = string.Empty;
 
 		#region Runボタンの処理
-		private ViewModelCommand _RunCommand;
-		bool _CanRun = true;
-
-		public ViewModelCommand RunCommand
+		/// <summary>
+		/// フィルタリングを実行する
+		/// </summary>
+		/// <param name="reason"></param>
+		/// <returns></returns>
+		public bool Run(out string reason)
 		{
-			get
-			{
-				if (_RunCommand == null)
-				{
-					_RunCommand = new ViewModelCommand(Run, CanRun);
-				}
-				return _RunCommand;
-			}
-		}
-
-		public bool CanRun()
-		{
-			return _CanRun;
-		}
-
-		public void Run()
-		{
-			// ボタンの実行可否が変化したことを通知
-			_CanRun = false;
-			RunCommand.RaiseCanExecuteChanged();
+			reason = string.Empty;
 
 			try
 			{
 				Analysis.Run(Repository, ShaHash, InputFile, OutputFile);
-				Messenger.RaiseAsync(new InformationMessage("完了しました", "Done", MessageBoxImage.Information, "RunResult"));
+				return true;
 			}
 			catch (Exception e)
 			{
-				Messenger.RaiseAsync(new InformationMessage($"失敗しました\n----------\n{e.Message}", "Error", MessageBoxImage.Error, "RunResult"));
+				reason = e.Message;
+				logger.Error(e.Message);
 			}
 
-			// ボタンの実行可否が変化したことを通知
-			_CanRun = true;
-			RunCommand.RaiseCanExecuteChanged();
+			return false;
+		}
+		#endregion
+
+		#region 更新をチェックする
+		/*
+		private ViewModelCommand _CheckUpdateCommand;
+		bool _CanCheckUpdate = true;
+
+		public ViewModelCommand CheckUpdateCommand
+		{
+			get
+			{
+				if (_CheckUpdateCommand == null)
+				{
+					_CheckUpdateCommand = new ViewModelCommand(CheckUpdate, CanCheckUpdate);
+				}
+				return _CheckUpdateCommand;
+			}
+		}
+
+		public bool CanCheckUpdate()
+		{
+			return _CanCheckUpdate;
+		}
+		*/
+
+		Update update = Update.Instance;
+		/// <summary>
+		/// アップデートが存在するかどうかチェックする
+		/// </summary>
+		/// <returns></returns>
+		public bool? CheckUpdate(out string latestVersion)
+		{
+			return update.CheckUpdate(out latestVersion);
+		}
+
+		/// <summary>
+		/// アップデートを実行する
+		/// </summary>
+		/// <returns></returns>
+		public bool RunUpdate()
+		{
+			return update.RunUpdate();
 		}
 		#endregion
 
