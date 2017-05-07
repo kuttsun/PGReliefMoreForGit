@@ -45,15 +45,28 @@ namespace PGReliefMoreForGit.Views
 		// 実行
 		private async void ButtonRun_Click(object sender, RoutedEventArgs e)
 		{
+			// プログレスダイアログを表示
 			var controller = await this.ShowProgressAsync("Processing", "Please wait...");
 
+			// プログレスバーを不確定モードにする
 			controller.SetIndeterminate();
 
 			var vm = DataContext as MainWindowViewModel;
 
-			await Task.Run(() => vm.Run());
+			string reason = string.Empty;
+			bool result = await Task.Run(() => vm.Run(out reason));
 
+			// プログレスダイアログを閉じる
 			await controller.CloseAsync();
+
+			if (result == true)
+			{
+				await this.ShowMessageAsync("Success", "Filtering completed.");
+			}
+			else
+			{
+				await this.ShowMessageAsync("Failure", reason);
+			}
 		}
 
 		// GitHub のページへアクセス
@@ -68,7 +81,7 @@ namespace PGReliefMoreForGit.Views
 			// プログレスダイアログを表示
 			var controller1 = await this.ShowProgressAsync("Checking Update", "Please wait...");
 
-			// プログレスバー不確定モードにする
+			// プログレスバーを不確定モードにする
 			controller1.SetIndeterminate();
 
 			var vm = DataContext as MainWindowViewModel;
@@ -122,11 +135,6 @@ namespace PGReliefMoreForGit.Views
 		private void MenuExit_Click(object sender, RoutedEventArgs e)
 		{
 			Close();
-		}
-
-		private void MenuItem_Click(object sender, RoutedEventArgs e)
-		{
-
 		}
 	}
 }

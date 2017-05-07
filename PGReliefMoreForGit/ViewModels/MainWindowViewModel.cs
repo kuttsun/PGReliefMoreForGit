@@ -95,45 +95,27 @@ namespace PGReliefMoreForGit.ViewModels
 		public string Title { get; set; } = string.Empty;
 
 		#region Runボタンの処理
-		private ViewModelCommand _RunCommand;
-		bool _CanRun = true;
-
-		public ViewModelCommand RunCommand
+		/// <summary>
+		/// フィルタリングを実行する
+		/// </summary>
+		/// <param name="reason"></param>
+		/// <returns></returns>
+		public bool Run(out string reason)
 		{
-			get
-			{
-				if (_RunCommand == null)
-				{
-					_RunCommand = new ViewModelCommand(Run, CanRun);
-				}
-				return _RunCommand;
-			}
-		}
-
-		public bool CanRun()
-		{
-			return _CanRun;
-		}
-
-		public void Run()
-		{
-			// ボタンの実行可否が変化したことを通知
-			_CanRun = false;
-			RunCommand.RaiseCanExecuteChanged();
+			reason = string.Empty;
 
 			try
 			{
 				Analysis.Run(Repository, ShaHash, InputFile, OutputFile);
-				Messenger.RaiseAsync(new InformationMessage("完了しました", "Done", MessageBoxImage.Information, "RunResult"));
+				return true;
 			}
 			catch (Exception e)
 			{
-				Messenger.RaiseAsync(new InformationMessage($"失敗しました\n----------\n{e.Message}", "Error", MessageBoxImage.Error, "RunResult"));
+				reason = e.Message;
+				logger.Error(e.Message);
 			}
 
-			// ボタンの実行可否が変化したことを通知
-			_CanRun = true;
-			RunCommand.RaiseCanExecuteChanged();
+			return false;
 		}
 		#endregion
 
