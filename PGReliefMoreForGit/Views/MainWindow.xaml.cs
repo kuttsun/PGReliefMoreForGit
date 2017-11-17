@@ -38,7 +38,9 @@ namespace PGReliefMoreForGit.Views
 		public MainWindow()
 		{
 			InitializeComponent();
-		}
+
+            DataContext = new MainWindowViewModel();
+        }
 
 		// とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
 

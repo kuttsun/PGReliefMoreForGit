@@ -7,6 +7,10 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Windows;
 
+using Prism.Commands;
+using Prism.Interactivity.InteractionRequest;
+using Prism.Mvvm;
+
 using NLog;
 
 using PGReliefMoreForGit.Models;
@@ -15,7 +19,7 @@ using PGReliefMoreForGit.Models.Update;
 
 namespace PGReliefMoreForGit.ViewModels
 {
-    public class MainWindowViewModel
+    public class MainWindowViewModel : BindableBase
     {
         Logger logger = LogManager.GetCurrentClassLogger();
 
