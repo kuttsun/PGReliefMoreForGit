@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Livet;
-
 using System.Diagnostics;
 using System.Net;
 using System.IO;
@@ -19,7 +17,7 @@ namespace PGReliefMoreForGit.Models.Update
 	/// <summary>
 	/// アプリケーションの自動アップデート機能を提供するクラス（Singleton）
 	/// </summary>
-	public sealed class Update : NotificationObject
+	public sealed class Update
 	{
 		/*
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。

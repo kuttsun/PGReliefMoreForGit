@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NLog;
-using Livet;
 
 using PGReliefMoreForGit.Models.Git;
 using PGReliefMoreForGit.Models.PGRelief;
 
 namespace PGReliefMoreForGit.Models
 {
-	class Analysis : NotificationObject
+	class Analysis
 	{
 		Logger logger = LogManager.GetCurrentClassLogger();
 
