@@ -125,9 +125,9 @@
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\PGRelief\PGRelief.cs" />
     <Compile Include="Models\PGRelief\RemarkMessage.cs" />
-    <Compile Include="Models\Setting\Configuration.cs" />
-    <Compile Include="Models\Setting\FileSetting.cs" />
-    <Compile Include="Models\Setting\UserSetting.cs" />
+    <Compile Include="Models\Settings\AppSetting.cs" />
+    <Compile Include="Models\Settings\FileSetting.cs" />
+    <Compile Include="Models\Settings\UserSetting.cs" />
     <Compile Include="Models\Update\Update.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
