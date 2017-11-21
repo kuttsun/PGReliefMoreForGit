@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace PGReliefMoreForGit.Models.Setting
+namespace PGReliefMoreForGit.Models.Settings
 {
 	/// <summary>
 	/// ユーザーが設定ファイルとして個別に保存する設定（Singleton）
