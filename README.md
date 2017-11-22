@@ -1,5 +1,9 @@
 # PGReliefMore for Git
 
+[![Build status](https://ci.appveyor.com/api/projects/status/jhmgwpxn9af1c4qa?svg=true)](https://ci.appveyor.com/project/kuttsun/pgreliefmoreforgit)
+
+
+
 富士通の C/C++ コードの静的解析ツール [PGRelief](http://www.fujitsu.com/jp/group/fst/products/pgr/) の出力結果をフィルタリングするアプリケーションです。  
 VCS として Git を使用していることが前提です。  
 Git のリポジトリ情報をもとに、PGRelief の出力結果の中から変更した箇所に対する指摘のみを抽出します。  
