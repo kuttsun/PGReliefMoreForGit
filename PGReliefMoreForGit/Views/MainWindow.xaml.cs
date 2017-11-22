@@ -15,6 +15,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
+// ファイル選択ダイアログの名前空間を using
+using Microsoft.Win32;
+
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -22,7 +25,7 @@ using PGReliefMoreForGit.ViewModels;
 
 namespace PGReliefMoreForGit.Views
 {
-	/* 
+    /* 
 	 * ViewModelからの変更通知などの各種イベントを受け取る場合は、PropertyChangedWeakEventListenerや
      * CollectionChangedWeakEventListenerを使うと便利です。独自イベントの場合はLivetWeakEventListenerが使用できます。
      * クローズ時などに、LivetCompositeDisposableに格納した各種イベントリスナをDisposeする事でイベントハンドラの開放が容易に行えます。
@@ -30,113 +33,153 @@ namespace PGReliefMoreForGit.Views
      * WeakEventListenerなので明示的に開放せずともメモリリークは起こしませんが、できる限り明示的に開放するようにしましょう。
      */
 
-	/// <summary>
-	/// MainWindow.xaml の相互作用ロジック
-	/// </summary>
-	public partial class MainWindow : MetroWindow
-	{
-		public MainWindow()
-		{
-			InitializeComponent();
+    /// <summary>
+    /// MainWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class MainWindow : MetroWindow
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
 
             DataContext = new MainWindowViewModel();
         }
 
-		// とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
+        // とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
 
-		// 実行
-		private async void ButtonRun_Click(object sender, RoutedEventArgs e)
-		{
-			// プログレスダイアログを表示
-			var controller = await this.ShowProgressAsync("Processing", "Please wait...");
+        // 読込
+        private async void ButtonLoadSetting_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Load Setting File",
+                Filter = "JSON File|*.json|All File|*.*"
+            };
 
-			// プログレスバーを不確定モードにする
-			controller.SetIndeterminate();
+            if (dialog.ShowDialog() == true)
+            {
+                var vm = DataContext as MainWindowViewModel;
 
-			var vm = DataContext as MainWindowViewModel;
+                if(await Task.Run(() => vm.Load(dialog.FileName)) == false)
+                {
+                    await this.ShowMessageAsync("Failure", "Can't load file.");
+                }
+            }
+        }
 
-			string reason = string.Empty;
-			bool result = await Task.Run(() => vm.Run(out reason));
+        // 保存
+        private async void ButtonSaveSetting_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Save Setting File",
+                Filter = "JSON File|*.json|All File|*.*"
+            };
 
-			// プログレスダイアログを閉じる
-			await controller.CloseAsync();
+            if (dialog.ShowDialog() == true)
+            {
+                var vm = DataContext as MainWindowViewModel;
 
-			if (result == true)
-			{
-				await this.ShowMessageAsync("Success", "Filtering completed.");
-			}
-			else
-			{
-				await this.ShowMessageAsync("Failure", reason);
-			}
-		}
+                if(await Task.Run(() => vm.Save(dialog.FileName)) == false)
+                {
+                    await this.ShowMessageAsync("Failure", "Can't save file.");
+                }
+            }
+        }
 
-		// GitHub のページへアクセス
-		private void MenuGitHubPage_Click(object sender, RoutedEventArgs e)
-		{
-			Process.Start("https://github.com/kuttsun/PGReliefMoreForGit");
-		}
+        // 実行
+        private async void ButtonRun_Click(object sender, RoutedEventArgs e)
+        {
+            // プログレスダイアログを表示
+            var controller = await this.ShowProgressAsync("Processing", "Please wait...");
 
-		// 更新のチェック
-		private async void MenuCheckUpdate_Click(object sender, RoutedEventArgs e)
-		{
-			// プログレスダイアログを表示
-			var controller1 = await this.ShowProgressAsync("Checking Update", "Please wait...");
+            // プログレスバーを不確定モードにする
+            controller.SetIndeterminate();
 
-			// プログレスバーを不確定モードにする
-			controller1.SetIndeterminate();
+            var vm = DataContext as MainWindowViewModel;
 
-			var vm = DataContext as MainWindowViewModel;
+            string reason = string.Empty;
+            bool result = await Task.Run(() => vm.Run(out reason));
 
-			string latestVersion = string.Empty;
-			bool? checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
+            // プログレスダイアログを閉じる
+            await controller.CloseAsync();
 
-			// プログレスダイアログを閉じる
-			await controller1.CloseAsync();
+            if (result == true)
+            {
+                await this.ShowMessageAsync("Success", "Filtering completed.");
+            }
+            else
+            {
+                await this.ShowMessageAsync("Failure", reason);
+            }
+        }
 
-			// 結果に応じてダイアログを表示
-			switch (checkResult)
-			{
-				case true:
-					var metroDialogSettings = new MetroDialogSettings()
-					{
-						AffirmativeButtonText = "Yes",
-						NegativeButtonText = "No",
-					};
-					var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
-					if (select == MessageDialogResult.Affirmative)
-					{
-						// プログレスダイアログを表示
-						var controller2 = await this.ShowProgressAsync("Run Update", "Please wait...");
+        // GitHub のページへアクセス
+        private void MenuGitHubPage_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/kuttsun/PGReliefMoreForGit");
+        }
 
-						// プログレスバー不確定モードにする
-						controller2.SetIndeterminate();
+        // 更新のチェック
+        private async void MenuCheckUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            // プログレスダイアログを表示
+            var controller1 = await this.ShowProgressAsync("Checking Update", "Please wait...");
 
-						bool updateResult = await Task.Run(() => vm.RunUpdate());
+            // プログレスバーを不確定モードにする
+            controller1.SetIndeterminate();
 
-						// プログレスダイアログを閉じる
-						await controller2.CloseAsync();
+            var vm = DataContext as MainWindowViewModel;
 
-						if (updateResult == true)
-						{
-							// 成功したら再起動するため、アプリケーションを終了する
-							Close();
-						}
-					}
-					break;
-				case false:
-					await this.ShowMessageAsync("No Updates", "You already have the latest version.");
-					break;
-				default:
-					await this.ShowMessageAsync("Network Error", "Check your network connection and try again.");
-					break;
-			}
-		}
+            string latestVersion = string.Empty;
+            bool? checkResult = await Task.Run(() => vm.CheckUpdate(out latestVersion));
 
-		// アプリ終了
-		private void MenuExit_Click(object sender, RoutedEventArgs e)
-		{
-			Close();
-		}
-	}
+            // プログレスダイアログを閉じる
+            await controller1.CloseAsync();
+
+            // 結果に応じてダイアログを表示
+            switch (checkResult)
+            {
+                case true:
+                    var metroDialogSettings = new MetroDialogSettings()
+                    {
+                        AffirmativeButtonText = "Yes",
+                        NegativeButtonText = "No",
+                    };
+                    var select = await this.ShowMessageAsync("Update Available", $"A new version ({latestVersion}) is available.\nDo you update now ?", MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+                    if (select == MessageDialogResult.Affirmative)
+                    {
+                        // プログレスダイアログを表示
+                        var controller2 = await this.ShowProgressAsync("Run Update", "Please wait...");
+
+                        // プログレスバー不確定モードにする
+                        controller2.SetIndeterminate();
+
+                        bool updateResult = await Task.Run(() => vm.RunUpdate());
+
+                        // プログレスダイアログを閉じる
+                        await controller2.CloseAsync();
+
+                        if (updateResult == true)
+                        {
+                            // 成功したら再起動するため、アプリケーションを終了する
+                            Close();
+                        }
+                    }
+                    break;
+                case false:
+                    await this.ShowMessageAsync("No Updates", "You already have the latest version.");
+                    break;
+                default:
+                    await this.ShowMessageAsync("Network Error", "Check your network connection and try again.");
+                    break;
+            }
+        }
+
+        // アプリ終了
+        private void MenuExit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+    }
 }

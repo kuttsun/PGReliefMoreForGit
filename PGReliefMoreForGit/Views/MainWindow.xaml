@@ -79,10 +79,23 @@
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
             </Grid>
         </GroupBox>
+        <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="384*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Content="Load" Click="ButtonLoadSetting_Click" Width="100" Height="20" HorizontalAlignment="Left"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="Save" Click="ButtonSaveSetting_Click" Width="100" Height="20" HorizontalAlignment="Left"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="Run" Click="ButtonRun_Click" Width="100" Height="20" HorizontalAlignment="Right"/>
+        </Grid>
         <!--
 		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding RunCommand}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
 		-->
-        <Button DockPanel.Dock="Top" Content="Run" Click="ButtonRun_Click" Width="100" Height="20" HorizontalAlignment="Right"/>
+        
         <!--
 		<ListBox DockPanel.Dock="Top" x:Name="listBox" BorderThickness="1" />
 		-->

@@ -14,7 +14,7 @@ using Prism.Mvvm;
 using NLog;
 
 using PGReliefMoreForGit.Models;
-using PGReliefMoreForGit.Models.Setting;
+using PGReliefMoreForGit.Models.Settings;
 using PGReliefMoreForGit.Models.Update;
 
 namespace PGReliefMoreForGit.ViewModels
@@ -22,6 +22,7 @@ namespace PGReliefMoreForGit.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         Logger logger = LogManager.GetCurrentClassLogger();
+        FileSetting fileSetting = FileSetting.Instance;
 
         public void Initialize()
         {
@@ -39,10 +40,10 @@ namespace PGReliefMoreForGit.ViewModels
             Title = $"{name.Name}   {fvi.ProductVersion}";
 
             // 設定の読み込み
-            Repository = FileSetting.Instance.Repository;
-            ShaHash = FileSetting.Instance.ShaHash;
-            InputFile = FileSetting.Instance.InputFile;
-            OutputFile = FileSetting.Instance.OutputFile;
+            Repository = fileSetting.Repository;
+            ShaHash = fileSetting.ShaHash;
+            InputFile = fileSetting.InputFile;
+            OutputFile = fileSetting.OutputFile;
         }
 
         Analysis Analysis { get; set; } = new Analysis();
@@ -117,36 +118,98 @@ namespace PGReliefMoreForGit.ViewModels
         }
         #endregion
 
-        #region エディットボックスの値
+        #region 入力値
         /// <summary>
-        /// Git のローカルリポジトリへのパス
+        /// Git リポジトリへのパス
         /// </summary>
         public string Repository
         {
-            get
-            {
-                return repository;
-            }
+            get { return repository; }
             set
             {
-                repository = value;
-                //OnPropertyChanged(nameof(Repository));
+                SetProperty(ref repository, value);
+                fileSetting.Repository = value;
             }
         }
         string repository = string.Empty;
-
         /// <summary>
-        /// ワーキングツリーと比較するコミットの SHA ハッシュ値
+        /// 比較対象のコミットの SHA ハッシュ値
         /// </summary>
-        public string ShaHash { get; set; } = string.Empty;
+        public string ShaHash
+        {
+            get { return shaHash; }
+            set
+            {
+                SetProperty(ref shaHash, value);
+                fileSetting.ShaHash = value;
+            }
+        }
+        string shaHash = string.Empty;
         /// <summary>
         /// 入力ファイル（PGRelief で出力した html ファイル）
         /// </summary>
-        public string InputFile { get; set; } = string.Empty;
+        public string InputFile
+        {
+            get { return inputFile; }
+            set
+            {
+                SetProperty(ref inputFile, value);
+                fileSetting.InputFile = value;
+            }
+        }
+        string inputFile = string.Empty;
         /// <summary>
-        /// 出力ファイル（html ファイル）
+        /// 出力ファイル
         /// </summary>
-        public string OutputFile { get; set; } = string.Empty;
+        public string OutputFile
+        {
+            get { return outputFile; }
+            set
+            {
+                SetProperty(ref outputFile, value);
+                fileSetting.OutputFile = value;
+            }
+        }
+        string outputFile = string.Empty;
+        #endregion
+
+        #region ファイルの入出力
+        public bool Load(string fileName)
+        {
+            try
+            {
+                fileSetting.Load(fileName);
+
+                // メンバーの更新と View の更新
+                // これもっと良いやり方ないだろうか？
+                fileSetting = FileSetting.Instance;
+                Repository = fileSetting.Repository;
+                ShaHash = fileSetting.ShaHash;
+                InputFile = fileSetting.InputFile;
+                OutputFile = fileSetting.OutputFile;
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+                return false;
+            }
+        }
+
+        public bool Save(string fileName)
+        {
+            try
+            {
+                fileSetting.Save(fileName);
+                return true;
+            }
+            catch(Exception e)
+            {
+                logger.Error(e);
+                return false;
+            }
+        }
         #endregion
     }
 }
