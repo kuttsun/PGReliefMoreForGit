@@ -2,13 +2,15 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/jhmgwpxn9af1c4qa?svg=true)](https://ci.appveyor.com/project/kuttsun/pgreliefmoreforgit)
 
-富士通の C/C++ コードの静的解析ツール [PGRelief](http://www.fujitsu.com/jp/group/fst/products/pgr/) の出力結果をフィルタリングするアプリケーションです。  
+富士通の C/C++ コードの静的解析ツール [PGRelief](http://www.fujitsu.com/jp/group/fst/products/pgr/) の出力結果をフィルタリングするしょぼいアプリケーションです。  
 VCS として Git を使用していることが前提です。
 
 Git のリポジトリ情報をもとに、PGRelief の出力結果の中から変更した箇所に対する指摘のみを抽出します。  
 変更箇所の判別するためにコミットのハッシュ値を指定します。  
-指定したハッシュ値のコミットとワーキングツリーとの差分を変更箇所とみなします。
-尚、PGRelief の指摘メッセージは html で出力する必要があります（PGRelief 2016 以降で対応？）。  
+指定したハッシュ値のコミットとワーキングツリーとの差分を変更箇所とみなします。  
+尚、PGRelief の指摘メッセージは html で出力する必要があります（PGRelief 2016 以降で対応？）。
+
+[ダウンロードはこちら](https://github.com/kuttsun/PGReliefMoreForGit/releases)
 
 # 動作環境
 
@@ -28,7 +30,7 @@ Git のリポジトリ情報をもとに、PGRelief の出力結果の中から�
 
 `--pre`
 
-Pre-Release のバージョンを自動アップデート対象とします。
+Pre-release のバージョンを自動アップデート対象とします。
 
 ## cli コマンド
 
