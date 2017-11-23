@@ -88,16 +88,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="384*"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Row="0" Grid.Column="0" Content="Load" Click="ButtonLoadSetting_Click" Width="100" Height="20" HorizontalAlignment="Left"/>
-            <Button Grid.Row="0" Grid.Column="1" Content="Save" Click="ButtonSaveSetting_Click" Width="100" Height="20" HorizontalAlignment="Left"/>
-            <Button Grid.Row="0" Grid.Column="2" Content="Run" Click="ButtonRun_Click" Width="100" Height="20" HorizontalAlignment="Right"/>
+            <Button Grid.Row="0" Grid.Column="0" Content="Load" Click="ButtonLoadSetting_Click" Width="100" Height="20" HorizontalAlignment="Left" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="Save" Click="ButtonSaveSetting_Click" Width="100" Height="20" HorizontalAlignment="Left" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="Run" Click="ButtonRun_Click" Width="100" Height="20" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
         </Grid>
-        <!--
-		<Button DockPanel.Dock="Top" Content="Run" Command="{Binding RunCommand}" Width="100" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
-		-->
-        
-        <!--
-		<ListBox DockPanel.Dock="Top" x:Name="listBox" BorderThickness="1" />
-		-->
     </DockPanel>
 </Controls:MetroWindow>
