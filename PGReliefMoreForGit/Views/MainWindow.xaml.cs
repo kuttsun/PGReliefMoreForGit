@@ -10,13 +10,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
 
 // ファイル選択ダイアログの名前空間を using
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -38,14 +39,80 @@ namespace PGReliefMoreForGit.Views
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        MainWindowViewModel vm;
+
+        readonly string exePath;
+        readonly string exeFullPath;
+        readonly string startupPath;
+
         public MainWindow()
         {
             InitializeComponent();
 
             DataContext = new MainWindowViewModel();
+            vm = DataContext as MainWindowViewModel;
+
+            exePath = Environment.GetCommandLineArgs()[0];
+            exeFullPath = Path.GetFullPath(exePath);
+            startupPath = Path.GetDirectoryName(exeFullPath);
         }
 
         // とりあえずコードビハインドに書くが、出来れば Xaml だけで完結させたい
+
+        private void ButtonRepositoryBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                Title = "Select Git Repository",
+                // フォルダ選択ダイアログの場合は true
+                IsFolderPicker = true,
+                InitialDirectory = startupPath,
+                DefaultDirectory = startupPath,
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                vm.Repository = dialog.FileName;
+            }
+        }
+
+        private void ButtonInputFileBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                Title = "Select Input File",
+                IsFolderPicker = false,
+                InitialDirectory = startupPath,
+                DefaultDirectory = startupPath,
+            };
+
+            dialog.Filters.Add(new CommonFileDialogFilter("HTML File", "*.html"));
+            dialog.Filters.Add(new CommonFileDialogFilter("All File", "*.*"));
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                vm.InputFile = dialog.FileName;
+            }
+        }
+
+        private void ButtonOutputFileBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                Title = "Select Output File",
+                IsFolderPicker = false,
+                InitialDirectory = startupPath,
+                DefaultDirectory = startupPath
+            };
+
+            dialog.Filters.Add(new CommonFileDialogFilter("HTML File", "*.html"));
+            dialog.Filters.Add(new CommonFileDialogFilter("All File", "*.*"));
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                vm.OutputFile = dialog.FileName;
+            }
+        }
 
         // 読込
         private async void ButtonLoadSetting_Click(object sender, RoutedEventArgs e)
@@ -60,7 +127,7 @@ namespace PGReliefMoreForGit.Views
             {
                 var vm = DataContext as MainWindowViewModel;
 
-                if(await Task.Run(() => vm.Load(dialog.FileName)) == false)
+                if (await Task.Run(() => vm.Load(dialog.FileName)) == false)
                 {
                     await this.ShowMessageAsync("Failure", "Can't load file.");
                 }
@@ -80,7 +147,7 @@ namespace PGReliefMoreForGit.Views
             {
                 var vm = DataContext as MainWindowViewModel;
 
-                if(await Task.Run(() => vm.Save(dialog.FileName)) == false)
+                if (await Task.Run(() => vm.Save(dialog.FileName)) == false)
                 {
                     await this.ShowMessageAsync("Failure", "Can't save file.");
                 }

@@ -55,12 +55,14 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock  Grid.Row="0" Grid.Column="0" Text="Repository" VerticalAlignment="Center" />
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Repository, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True"/>
+                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Click="ButtonRepositoryBrowse_Click" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
                 <TextBlock  Grid.Row="1" Grid.Column="0" Text="SHA Hash" VerticalAlignment="Center" />
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ShaHash, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True"/>
-            </Grid>
+           </Grid>
         </GroupBox>
         <GroupBox DockPanel.Dock="Top" Header="PGRelief" HorizontalAlignment="Stretch" BorderThickness="0">
             <Grid>
@@ -70,13 +72,15 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="49*"/>
-                    <ColumnDefinition Width="384*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock  Grid.Row="0" Grid.Column="0" Text="Input File" VerticalAlignment="Center" Margin="0,4" />
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
-                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Output File" VerticalAlignment="Center" Margin="0,4" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" Grid.ColumnSpan="2" />
+                <TextBlock  Grid.Row="0" Grid.Column="0" Text="Input File" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding InputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
+                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Click="ButtonInputFileBrowse_Click" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
+                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Output File" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.ClearTextButton="True" />
+                <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Click="ButtonOutputFileBrowse_Click" HorizontalAlignment="Right" Controls:ControlsHelper.ContentCharacterCasing="Normal"/>
             </Grid>
         </GroupBox>
         <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
