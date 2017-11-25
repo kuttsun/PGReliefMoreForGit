@@ -15,8 +15,6 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 
-// ファイル選択ダイアログの名前空間を using
-using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 using MahApps.Metro.Controls;
@@ -117,16 +115,19 @@ namespace PGReliefMoreForGit.Views
         // 読込
         private async void ButtonLoadSetting_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog
+            var dialog = new CommonOpenFileDialog
             {
                 Title = "Load Setting File",
-                Filter = "JSON File|*.json|All File|*.*"
+                IsFolderPicker = false,
+                InitialDirectory = startupPath,
+                DefaultDirectory = startupPath,
             };
 
-            if (dialog.ShowDialog() == true)
-            {
-                var vm = DataContext as MainWindowViewModel;
+            dialog.Filters.Add(new CommonFileDialogFilter("JSON File", "*.json"));
+            dialog.Filters.Add(new CommonFileDialogFilter("All File", "*.*"));
 
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
                 if (await Task.Run(() => vm.Load(dialog.FileName)) == false)
                 {
                     await this.ShowMessageAsync("Failure", "Can't load file.");
@@ -137,16 +138,19 @@ namespace PGReliefMoreForGit.Views
         // 保存
         private async void ButtonSaveSetting_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new SaveFileDialog
+            var dialog = new CommonOpenFileDialog
             {
                 Title = "Save Setting File",
-                Filter = "JSON File|*.json|All File|*.*"
+                IsFolderPicker = false,
+                InitialDirectory = startupPath,
+                DefaultDirectory = startupPath,
             };
 
-            if (dialog.ShowDialog() == true)
-            {
-                var vm = DataContext as MainWindowViewModel;
+            dialog.Filters.Add(new CommonFileDialogFilter("JSON File", "*.json"));
+            dialog.Filters.Add(new CommonFileDialogFilter("All File", "*.*"));
 
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
                 if (await Task.Run(() => vm.Save(dialog.FileName)) == false)
                 {
                     await this.ShowMessageAsync("Failure", "Can't save file.");
