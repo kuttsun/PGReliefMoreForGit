@@ -45,6 +45,9 @@ namespace PGReliefMoreForGit
             // ヘルプ出力のトリガーとなるオプションを指定
             cla.HelpOption("-?|-h|--help");
 
+            // Pre-release をバージョンアップ対象とするオプションを指定
+            var preOptions = cla.Option("--pre", "Check pre-release version", CommandOptionType.NoValue);
+
             // 読み込むファイル
             var inputfileOptions = cla.Option("-f|--file <filename>", "Read a setting file.", CommandOptionType.SingleValue);
 
@@ -88,6 +91,11 @@ namespace PGReliefMoreForGit
             // デフォルトの動作
             cla.OnExecute(() =>
             {
+                if (preOptions.HasValue())
+                {
+                    Update.Instance.PreRelease = true;
+                }
+
                 // GUI を起動
                 App app = new App();
                 app.InitializeComponent();
