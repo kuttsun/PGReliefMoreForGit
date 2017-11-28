@@ -8,7 +8,13 @@ using System.Net;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using HtmlAgilityPack;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+using AngleSharp.Parser.Html;
+using AngleSharp.Dom;
+using AngleSharp.Dom.Html;
+
 using NLog;
 
 namespace PGReliefMoreForGit.Models.Update
@@ -19,9 +25,9 @@ namespace PGReliefMoreForGit.Models.Update
     /// </summary>
     public sealed class Update
     {
-        /*
-         * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
-         */
+        public bool PreRelease { get; set; } = false;
+
+        HttpClient client = new HttpClient();
 
         // GitHub のリリースページの URL
         readonly string gitHubReleaseURL = string.Empty;
@@ -80,8 +86,8 @@ namespace PGReliefMoreForGit.Models.Update
             logger.Info($"現在の製品バージョン(AssemblyVersion) {fvi.ProductVersion}");
             logger.Info($"現在のファイルバージョン(AssemblyFileVersion) {fvi.FileVersion}");
 
-            bool ret = GetLatestVersion(out latestVersion);
-            if (ret == true)
+            latestVersion = GetLatestVersion().Result;
+            if (latestVersion != null)
             {
                 var version1 = new Version(fvi.FileVersion);
                 var version2 = new Version(latestVersion);
@@ -99,53 +105,47 @@ namespace PGReliefMoreForGit.Models.Update
         }
 
         /// <summary>
-        /// 最新のアップデートがあるかどうかチェックする
+        /// 最新のバージョンを取得
         /// </summary>
         /// <param name="currentVersion"></param>
         /// <returns></returns>
-        public bool GetLatestVersion(out string latestVersion)
+        public async Task<string> GetLatestVersion()
         {
+            string tag = null;
+            string title = null;
+
             try
             {
-                // HtmlAgilityPack では直接URLのデータを取得できないようなので、
-                // WebClient を使用して取得する
-                using (WebClient webClient = new WebClient())
-                using (Stream stream = webClient.OpenRead(gitHubReleaseURL))
+                var doc = default(IHtmlDocument);
+
+                // GitHub のリリースページから HTML を取得
+                using (var stream = await client.GetStreamAsync(gitHubReleaseURL))
                 {
-                    var html = new HtmlDocument();
-
-                    // ページを取得
-                    html.Load(stream);
-
-                    // spanタグのやつの中で
-                    var nodes = html.DocumentNode.Descendants("span")
-                        // class が css-truncate-target のやつを取得し
-                        .Where(node => node.GetAttributeValue("class", string.Empty).Contains("css-truncate-target"))
-                        // タグの中身を取得
-                        .Select(node => node.InnerHtml);
-
-                    // 取得したタグの中身（バージョンのリスト）を順に表示
-                    foreach (var version in nodes)
-                    {
-                        Console.WriteLine(version);
-                    }
-
-                    // バージョンを取得できた
-                    if (nodes.Count() > 0)
-                    {
-                        // 一番最初が最も新しいバージョン
-                        latestVersion = nodes.First().ToString();
-                        return true;
-                    }
+                    // HTMLをパース
+                    var parser = new HtmlParser();
+                    doc = await parser.ParseAsync(stream);
                 }
+
+                IEnumerable<IElement> elements = doc.QuerySelectorAll("div.release");
+                if (PreRelease == false)
+                {
+                    // Pre-Release を除外
+                    elements = elements.Where(m => m.ClassList.Contains("label-prerelease") == false);
+                }
+
+                // 最初に見つかったものが最も新しいバージョン
+
+                // タグの取得
+                tag = elements.First().QuerySelector("span.css-truncate-target").TextContent;
+                // リリースタイトルの取得
+                title = elements.First().QuerySelector("h1.release-title > a").TextContent;
             }
             catch (Exception e)
             {
                 logger.Error(e.Message);
             }
 
-            latestVersion = string.Empty;
-            return false;
+            return tag;
         }
 
         /// <summary>
