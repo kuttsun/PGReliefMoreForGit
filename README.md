@@ -10,13 +10,13 @@ Git のリポジトリ情報をもとに、PGRelief の出力結果の中から�
 指定したハッシュ値のコミットとワーキングツリーとの差分を変更箇所とみなします。  
 尚、PGRelief の指摘メッセージは html で出力する必要があります（PGRelief 2016 以降で対応？）。
 
-[ダウンロードはこちら](https://github.com/kuttsun/PGReliefMoreForGit/releases)
+- [ダウンロードはこちら](https://github.com/kuttsun/PGReliefMoreForGit/releases)
 
 # 動作環境
 
 - .NET Framework 4.5+
 
-# CLI
+# コマンド、オプション
 
 以下のコマンドライン引数に対応しています。
 
@@ -32,10 +32,11 @@ Git のリポジトリ情報をもとに、PGRelief の出力結果の中から�
 
 Pre-release のバージョンを自動アップデート対象とします。
 
-## cli コマンド
+## nogui コマンド (将来対応)
 
-`cli` を指定することで CLI モードで動作します（GUI を表示しません）。  
-この場合は以下の引数とオプションに対応しています。
+`nogui` を指定することで CLI モードで動作します（GUI を表示しません）。
+
+このコマンドでは以下の引数とオプションに対応しています。
 
 `-f|--file <PATH>`
 
@@ -44,13 +45,13 @@ Pre-release のバージョンを自動アップデート対象とします。
 ### サンプル
 
 ```sh
-PGReliefMoreForGit.exe cli -f=hoge.json
+PGReliefMoreForGit.exe nogui -f=hoge.json
 ```
 
 ## up コマンド
 
 アップデート処理で使用します（ユーザーが直接指定することはありません）。  
-この場合は以下の引数とオプションに対応しています。
+このコマンドでは以下の引数とオプションに対応しています。
 
 `--pid <PROCESS_ID>`
 
