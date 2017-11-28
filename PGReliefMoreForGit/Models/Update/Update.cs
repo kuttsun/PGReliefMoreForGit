@@ -86,7 +86,7 @@ namespace PGReliefMoreForGit.Models.Update
             logger.Info($"現在の製品バージョン(AssemblyVersion) {fvi.ProductVersion}");
             logger.Info($"現在のファイルバージョン(AssemblyFileVersion) {fvi.FileVersion}");
 
-            latestVersion = GetLatestVersion().Result;
+            latestVersion = GetLatestVersionAsync().Result;
             if (latestVersion != null)
             {
                 var version1 = new Version(fvi.FileVersion);
@@ -109,7 +109,7 @@ namespace PGReliefMoreForGit.Models.Update
         /// </summary>
         /// <param name="currentVersion"></param>
         /// <returns></returns>
-        public async Task<string> GetLatestVersion()
+        public async Task<string> GetLatestVersionAsync()
         {
             string tag = null;
             string title = null;
