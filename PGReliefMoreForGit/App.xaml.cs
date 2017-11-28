@@ -52,7 +52,7 @@ namespace PGReliefMoreForGit
             var inputfileOptions = cla.Option("-f|--file <filename>", "Read a setting file.", CommandOptionType.SingleValue);
 
             // CLI モード
-            cla.Command("cli", command =>
+            cla.Command("nogui", command =>
             {
                 // 説明（ヘルプの出力で使用される）
                 command.Description = "Command Line Interface Mode (No GUI)";
