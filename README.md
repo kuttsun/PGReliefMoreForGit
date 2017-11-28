@@ -14,7 +14,7 @@ Git のリポジトリ情報をもとに、PGRelief の出力結果の中から�
 
 # 動作環境
 
-- .NET Framework 4.5+
+- .NET Framework 4.5.1+
 
 # コマンド、オプション
 
