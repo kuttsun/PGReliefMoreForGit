@@ -12,6 +12,8 @@ using Microsoft.Extensions.CommandLineUtils;
 using NLog;
 
 using PGReliefMoreForGit.Models.Update;
+using PGReliefMoreForGit.Models.Settings;
+
 
 namespace PGReliefMoreForGit
 {
@@ -49,7 +51,7 @@ namespace PGReliefMoreForGit
             var preOptions = cla.Option("--pre", "Check pre-release version", CommandOptionType.NoValue);
 
             // 読み込むファイル
-            var inputfileOptions = cla.Option("-f|--file <filename>", "Read a setting file.", CommandOptionType.SingleValue);
+            var inputfileOptions = cla.Option("-f|--file", "Read a setting file.", CommandOptionType.SingleValue);
 
             // CLI モード
             cla.Command("nogui", command =>
@@ -94,6 +96,20 @@ namespace PGReliefMoreForGit
                 if (preOptions.HasValue())
                 {
                     Update.Instance.PreRelease = true;
+                }
+
+                try
+                {
+                    if (inputfileOptions.HasValue())
+                    {
+
+                        FileSetting.Instance.Load(inputfileOptions.Value());
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.Error(e);
                 }
 
                 // GUI を起動
