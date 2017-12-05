@@ -1,6 +1,7 @@
 # PGReliefMoreForGit
 
-[![Build status](https://ci.appveyor.com/api/projects/status/jhmgwpxn9af1c4qa?svg=true)](https://ci.appveyor.com/project/kuttsun/pgreliefmoreforgit)
+[![Build status](https://ci.appveyor.com/api/projects/status/jhmgwpxn9af1c4qa?svg=true)](https://ci.appveyor.com/project/kuttsun/pgreliefmoreforgit) 
+[![codecov](https://codecov.io/gh/kuttsun/PGReliefMoreForGit/branch/master/graph/badge.svg)](https://codecov.io/gh/kuttsun/PGReliefMoreForGit)
 
 富士通の C/C++ コードの静的解析ツール [PGRelief](http://www.fujitsu.com/jp/group/fst/products/pgr/) の出力結果をフィルタリングするしょぼいアプリケーションです。  
 VCS として Git を使用していることが前提です。
