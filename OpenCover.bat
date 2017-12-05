@@ -1,7 +1,7 @@
 ﻿rem ソリューションルートで実行すること
 
-rem MSTEST のインストール先
-set MSTEST="C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+rem MSTEST のインストール先(引数で与える)
+set MSTEST=%1
 
 rem OpenCover のインストール先
 set OPENCOVER="packages\OpenCover.4.6.519\tools\OpenCover.Console.exe"
