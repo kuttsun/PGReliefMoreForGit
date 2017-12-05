@@ -7,7 +7,7 @@ build:
   project: PGReliefMoreForGit.sln
 after_test:
   # OpenCover でカバレッジを計測
-  - OpenCover.bat "vstest.console /logger:Appveyor"
+  - OpenCover.bat vstest.console
   
   # Codecov への送信コマンド
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
