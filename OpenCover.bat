@@ -20,4 +20,4 @@ rem set FILTERS="+[OpenCoverSample]*"
 set FILTERS="+[PGReliefMoreForGit]* -[PGReliefMoreForGit]PGReliefMoreForGit.Properties.* -[PGReliefMoreForGit]PGReliefMoreForGit.ViewModels.* -[PGReliefMoreForGit]PGReliefMoreForGit.Views.*"
 
 rem OpenCover の実行
-%OPENCOVER% -register:user -target:%MSTEST% -targetargs:%target_test% -targetdir:%TARGET_DIR% -filter:%FILTERS% -output:%OUTPUT%
+%OPENCOVER% -register:user -target:%MSTEST% -targetargs:%TARGET_TEST% -targetdir:%TARGET_DIR% -filter:%FILTERS% -output:%OUTPUT%
