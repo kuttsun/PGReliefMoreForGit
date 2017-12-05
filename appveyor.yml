@@ -5,3 +5,11 @@ before_build:
 build:
   parallel: true
   project: PGReliefMoreForGit.sln
+after_test:
+  # OpenCover でカバレッジを計測
+  - OpenCover.bat
+  
+  # Codecov への送信コマンド
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
+  - codecov -f "result.xml"

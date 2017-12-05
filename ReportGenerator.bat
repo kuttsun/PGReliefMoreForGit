@@ -1,0 +1,13 @@
+﻿rem ソリューションルートで実行すること
+
+rem ReportGenerator のインストール先
+set REPORTGEN="packages\ReportGenerator.3.0.2\tools\ReportGenerator.exe"
+
+rem OpenCover の出力ファイル
+set OUTPUT="result.xml"
+
+rem ReportGenerator の HTML 出力先
+set OUTPUT_DIR="html"
+
+rem レポートの生成 (xml から html へ変換)
+%REPORTGEN% -reports:%OUTPUT% -targetdir:%OUTPUT_DIR%
