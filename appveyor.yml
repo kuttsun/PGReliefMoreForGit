@@ -7,9 +7,8 @@ build:
   project: PGReliefMoreForGit.sln
 test_script:
   # OpenCover でカバレッジを計測
-  - OpenCover.bat vstest.console.exe
-  - .\packages\Codecov.1.0.3\tools\codecov.exe -f "coverage.xml"
-  # Codecov への送信コマンド
+  - OpenCover.bat vstest.console.exe "coverage.xml"
+  # Codecov へカバレッジ結果を渡す
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
-  - codecov -f "result.xml"
+  - codecov -f "coverage.xml"

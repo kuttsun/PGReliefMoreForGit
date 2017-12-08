@@ -1,4 +1,4 @@
-rem ソリューションルートで実行すること
+﻿rem ソリューションルートで実行すること
 
 rem MSTEST のインストール先(引数で与える)
 set MSTEST=%1
@@ -13,7 +13,7 @@ rem 実行するテストのアセンブリの格納先
 set TARGET_DIR=".\PGReliefMoreForGit.Tests\bin\Release"
 
 rem OpenCover の出力ファイル
-set OUTPUT="coverage.xml"
+set OUTPUT=%2
 
 rem カバレッジ計測対象の指定
 rem set FILTERS="+[OpenCoverSample]*"
