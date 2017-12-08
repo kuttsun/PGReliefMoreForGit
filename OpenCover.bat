@@ -13,7 +13,7 @@ rem 実行するテストのアセンブリの格納先
 set TARGET_DIR=".\PGReliefMoreForGit.Tests\bin\Release"
 
 rem OpenCover の出力ファイル
-set OUTPUT="result.xml"
+set OUTPUT="coverage.xml"
 
 rem カバレッジ計測対象の指定
 rem set FILTERS="+[OpenCoverSample]*"
